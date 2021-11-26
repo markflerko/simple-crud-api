@@ -12,7 +12,6 @@ const server = http.createServer(async (req, res) => {
   const [path, person_id] = url.split("/").slice(1);
   console.log(`path: ${path}`, `id: ${person_id}`);
 
-  // TODO: ask Leha if there are regExp
   if (path !== "person") {
     console.log(`received ${method}-request on ${url}`);
     res.write("Sorry but we dont have other routes than person \n");
@@ -20,11 +19,29 @@ const server = http.createServer(async (req, res) => {
   }
 
   switch (method) {
+    case "DELETE":
+      if (!isUuid(person_id)) {
+        res.write(`Sorry but id: ${person_id} doesnt match uuid format \n`);
+        res.statusCode = 400;
+        res.end();
+      } else if (!database.hasOwnProperty(person_id)) {
+        res.write(`Sorry but no user with ${person_id} exist \n`);
+        res.statusCode = 404;
+        res.end();
+      } else {
+        const isPersonDeleted = delete database[person_id];
+        if (isPersonDeleted) {
+          res.writeHead(204, { "Content-Type": "application/json" });
+          res.end();
+        }
+      }
+      break;
+
     case "PUT":
       await bodyParser(req);
       if (!isUuid(person_id)) {
         res.write(`Sorry but id: ${person_id} doesnt match uuid format \n`);
-        res.statusCode = 404;
+        res.statusCode = 400;
         res.end();
       } else if (!database.hasOwnProperty(person_id)) {
         res.write(`Sorry but no user with ${person_id} exist \n`);
