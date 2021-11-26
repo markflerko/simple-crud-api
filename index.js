@@ -19,6 +19,28 @@ const server = http.createServer(async (req, res) => {
   }
 
   switch (method) {
+    case "GET":
+      if (!person_id) {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.write(JSON.stringify(database));
+        res.end();
+      } else {
+        if (!isUuid(person_id)) {
+          res.write(`Sorry but id: ${person_id} doesnt match uuid format \n`);
+          res.statusCode = 400;
+          res.end();
+        } else if (!database.hasOwnProperty(person_id)) {
+          res.write(`Sorry but no user with ${person_id} exist \n`);
+          res.statusCode = 404;
+          res.end();
+        } else {
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.write(JSON.stringify(database[person_id]));
+          res.end();
+        }
+      }
+      break;
+
     case "DELETE":
       if (!isUuid(person_id)) {
         res.write(`Sorry but id: ${person_id} doesnt match uuid format \n`);
@@ -61,12 +83,6 @@ const server = http.createServer(async (req, res) => {
       database[id] = { ...req.body, id };
       res.writeHead(201, { "Content-Type": "application/json" });
       res.write(JSON.stringify(database[id]));
-      res.end();
-      break;
-
-    case "GET":
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.write(JSON.stringify(database));
       res.end();
       break;
 
