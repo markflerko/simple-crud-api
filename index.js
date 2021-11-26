@@ -20,17 +20,17 @@ const server = http.createServer(async (req, res) => {
 
   switch (method) {
     case "POST":
-      console.log(`received ${method}-request on ${url}`);
       await bodyParser(req);
-      database[`${uuidv4()}`] = req.body;
-      console.log("db: ", database);
-      res.write("Hello POST hardcoded \n");
+      const id = uuidv4();
+      database[id] = req.body;
+      res.writeHead(201, { "Content-Type": "application/json" });
+      res.write(JSON.stringify(database[id]));
       res.end();
       break;
 
     case "GET":
-      console.log(`received ${method}-request on ${url}`);
-      res.write("Hello GET hardcoded\n");
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.write(JSON.stringify(database));
       res.end();
       break;
 
