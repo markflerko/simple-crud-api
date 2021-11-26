@@ -1,6 +1,7 @@
 const http = require("http");
 const { v4: uuidv4 } = require("uuid");
 const bodyParser = require("./src/utils/bodyParser");
+const isUuid = require("./src/utils/isUuid");
 
 const PORT = process.env.PORT || 5000;
 
@@ -21,8 +22,13 @@ const server = http.createServer(async (req, res) => {
   switch (method) {
     case "PUT":
       await bodyParser(req);
-      if (!database.hasOwnProperty(person_id)) {
+      if (!isUuid(person_id)) {
+        res.write(`Sorry but id: ${person_id} doesnt match uuid format \n`);
+        res.statusCode = 404;
+        res.end();
+      } else if (!database.hasOwnProperty(person_id)) {
         res.write(`Sorry but no user with ${person_id} exist \n`);
+        res.statusCode = 404;
         res.end();
       } else {
         database[person_id] = { ...database[person_id], ...req.body };
