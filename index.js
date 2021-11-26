@@ -8,8 +8,8 @@ let database = {};
 
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
-  const [path, id] = url.split("/").slice(1);
-  console.log(`path: ${path}`, `id: ${id}`);
+  const [path, person_id] = url.split("/").slice(1);
+  console.log(`path: ${path}`, `id: ${person_id}`);
 
   // TODO: ask Leha if there are regExp
   if (path !== "person") {
@@ -19,10 +19,23 @@ const server = http.createServer(async (req, res) => {
   }
 
   switch (method) {
+    case "PUT":
+      await bodyParser(req);
+      if (!database.hasOwnProperty(person_id)) {
+        res.write(`Sorry but no user with ${person_id} exist \n`);
+        res.end();
+      } else {
+        database[person_id] = { ...database[person_id], ...req.body };
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.write(JSON.stringify(database[person_id]));
+        res.end();
+      }
+      break;
+
     case "POST":
       await bodyParser(req);
       const id = uuidv4();
-      database[id] = req.body;
+      database[id] = { ...req.body, id };
       res.writeHead(201, { "Content-Type": "application/json" });
       res.write(JSON.stringify(database[id]));
       res.end();
