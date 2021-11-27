@@ -3,6 +3,8 @@ const { v4: uuidv4 } = require("uuid");
 const bodyParser = require("./src/utils/bodyParser");
 const isUuid = require("./src/utils/isUuid");
 const createPerson = require("./src/services/createPerson");
+const readPersons = require("./src/services/readPersons");
+const responseBuilder = require("./src/utils/responseBuilder");
 const { database } = require("./src/repository/database");
 
 const PORT = process.env.PORT || 5000;
@@ -22,16 +24,15 @@ const server = http.createServer(async (req, res) => {
     case "POST":
       await bodyParser(req);
       const person = createPerson({ data: req.body });
-
-      res.writeHead(201, { "Content-Type": "application/json" });
-      res.write(JSON.stringify(person));
-      res.end();
+      responseBuilder({ res, code: 201, body: person });
       break;
 
     case "GET":
       if (!person_id) {
+        const persons = readPersons();
+
         res.writeHead(200, { "Content-Type": "application/json" });
-        res.write(JSON.stringify(database));
+        res.write(JSON.stringify(persons));
         res.end();
       } else {
         if (!isUuid(person_id)) {
