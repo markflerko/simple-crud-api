@@ -1,14 +1,13 @@
 const http = require("http");
-const { v4: uuidv4 } = require("uuid");
 const bodyParser = require("./src/utils/bodyParser");
 const isUuid = require("./src/utils/isUuid");
-const post = require("./src/controllers/post");
-const get = require("./src/controllers/get");
-const getOne = require("./src/controllers/getOne");
+const postPerson = require("./src/controllers/postPerson");
+const getPersons = require("./src/controllers/getPersons");
+const getPerson = require("./src/controllers/getPerson");
 const responseBuilder = require("./src/utils/responseBuilder");
 const { database } = require("./src/repository/database");
-const deletePerson = require("./src/services/deletePerson");
-const updatePerson = require("./src/services/updatePerson");
+const delPerson = require("./src/controllers/delPerson");
+const putPerson = require("./src/controllers/putPerson");
 
 const PORT = process.env.PORT || 5000;
 
@@ -25,56 +24,23 @@ const server = http.createServer(async (req, res) => {
 
   switch (method) {
     case "POST":
-      post(req, res);
+      postPerson(req, res);
       break;
 
     case "GET":
       if (!person_id) {
-        get(res);
+        getPersons(res);
       } else {
-        getOne({res, id: person_id});
+        getPerson({ res, id: person_id });
       }
       break;
 
     case "DELETE":
-      if (!isUuid(person_id)) {
-        responseBuilder({
-          res,
-          code: 400,
-          message: `Sorry but id: ${person_id} doesnt match uuid format \n`,
-        });
-      } else if (!database.hasOwnProperty(person_id)) {
-        responseBuilder({
-          res,
-          code: 404,
-          message: `Sorry but no user with ${person_id} exist \n`,
-        });
-      } else {
-        const isPersonDeleted = deletePerson(person_id);
-        if (isPersonDeleted) {
-          responseBuilder({ res, code: 204 });
-        }
-      }
+      delPerson({ res, id: person_id });
       break;
 
     case "PUT":
-      await bodyParser(req);
-      if (!isUuid(person_id)) {
-        responseBuilder({
-          res,
-          code: 400,
-          message: `Sorry but id: ${person_id} doesnt match uuid format \n`,
-        });
-      } else if (!database.hasOwnProperty(person_id)) {
-        responseBuilder({
-          res,
-          code: 404,
-          message: `Sorry but no user with ${person_id} exist \n`,
-        });
-      } else {
-        const updatedPerson = updatePerson({ id: person_id, body: req.body });
-        responseBuilder({ res, code: 200, body: updatedPerson });
-      }
+      putPerson({ res, req, id: person_id });
       break;
 
     default:

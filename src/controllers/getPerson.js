@@ -3,7 +3,7 @@ const readPerson = require("../services/readPerson");
 const isUuid = require("../utils/isUuid");
 const responseBuilder = require("../utils/responseBuilder");
 
-const getOne = async ({res, id}) => {
+const getPerson = async ({res, id}) => {
   if (!isUuid(id)) {
     responseBuilder({
       res,
@@ -27,4 +27,4 @@ const getOne = async ({res, id}) => {
   }
 };
 
-module.exports = getOne;
+module.exports = getPerson;
