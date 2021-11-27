@@ -3,12 +3,12 @@ const { v4: uuidv4 } = require("uuid");
 const bodyParser = require("./src/utils/bodyParser");
 const isUuid = require("./src/utils/isUuid");
 const post = require("./src/controllers/post");
-const readPersons = require("./src/services/readPersons");
+const get = require("./src/controllers/get");
+const getOne = require("./src/controllers/getOne");
 const responseBuilder = require("./src/utils/responseBuilder");
 const { database } = require("./src/repository/database");
 const deletePerson = require("./src/services/deletePerson");
 const updatePerson = require("./src/services/updatePerson");
-const readPerson = require("./src/services/readPerson");
 
 const PORT = process.env.PORT || 5000;
 
@@ -30,31 +30,9 @@ const server = http.createServer(async (req, res) => {
 
     case "GET":
       if (!person_id) {
-        const persons = readPersons();
-
-        responseBuilder({ res, code: 200, body: persons });
+        get(res);
       } else {
-        if (!isUuid(person_id)) {
-          responseBuilder({
-            res,
-            code: 400,
-            message: `Sorry but id: ${person_id} doesnt match uuid format \n`,
-          });
-        } else if (!database.hasOwnProperty(person_id)) {
-          responseBuilder({
-            res,
-            code: 404,
-            message: `Sorry but no user with ${person_id} exist \n`,
-          });
-        } else {
-          const person = readPerson(person_id);
-
-          responseBuilder({
-            res,
-            code: 200,
-            body: person,
-          });
-        }
+        getOne({res, id: person_id});
       }
       break;
 
