@@ -2,10 +2,10 @@ const http = require("http");
 const { v4: uuidv4 } = require("uuid");
 const bodyParser = require("./src/utils/bodyParser");
 const isUuid = require("./src/utils/isUuid");
+const createPerson = require("./src/services/createPerson");
+const { database } = require("./src/repository/database");
 
 const PORT = process.env.PORT || 5000;
-
-let database = {};
 
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
@@ -19,6 +19,15 @@ const server = http.createServer(async (req, res) => {
   }
 
   switch (method) {
+    case "POST":
+      await bodyParser(req);
+      const person = createPerson({ data: req.body });
+
+      res.writeHead(201, { "Content-Type": "application/json" });
+      res.write(JSON.stringify(person));
+      res.end();
+      break;
+
     case "GET":
       if (!person_id) {
         res.writeHead(200, { "Content-Type": "application/json" });
@@ -75,15 +84,6 @@ const server = http.createServer(async (req, res) => {
         res.write(JSON.stringify(database[person_id]));
         res.end();
       }
-      break;
-
-    case "POST":
-      await bodyParser(req);
-      const id = uuidv4();
-      database[id] = { ...req.body, id };
-      res.writeHead(201, { "Content-Type": "application/json" });
-      res.write(JSON.stringify(database[id]));
-      res.end();
       break;
 
     default:
