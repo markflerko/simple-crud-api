@@ -14,7 +14,6 @@ const PORT = process.env.PORT || 5000;
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
   const [path, person_id] = url.split("/").slice(1);
-  console.log(`path: ${path}`, `id: ${person_id}`);
 
   if (path !== "person") {
     console.log(`received ${method}-request on ${url}`);
