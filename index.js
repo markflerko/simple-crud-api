@@ -2,7 +2,7 @@ const http = require("http");
 const { v4: uuidv4 } = require("uuid");
 const bodyParser = require("./src/utils/bodyParser");
 const isUuid = require("./src/utils/isUuid");
-const createPerson = require("./src/services/createPerson");
+const post = require("./src/controllers/post");
 const readPersons = require("./src/services/readPersons");
 const responseBuilder = require("./src/utils/responseBuilder");
 const { database } = require("./src/repository/database");
@@ -25,9 +25,7 @@ const server = http.createServer(async (req, res) => {
 
   switch (method) {
     case "POST":
-      await bodyParser(req);
-      const person = createPerson({ data: req.body });
-      responseBuilder({ res, code: 201, body: person });
+      post(req, res);
       break;
 
     case "GET":
