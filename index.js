@@ -6,6 +6,8 @@ const createPerson = require("./src/services/createPerson");
 const readPersons = require("./src/services/readPersons");
 const responseBuilder = require("./src/utils/responseBuilder");
 const { database } = require("./src/repository/database");
+const deletePerson = require("./src/services/deletePerson");
+const updatePerson = require("./src/services/updatePerson");
 
 const PORT = process.env.PORT || 5000;
 
@@ -31,40 +33,47 @@ const server = http.createServer(async (req, res) => {
       if (!person_id) {
         const persons = readPersons();
 
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.write(JSON.stringify(persons));
-        res.end();
+        responseBuilder({ res, code: 200, body: persons });
       } else {
         if (!isUuid(person_id)) {
-          res.write(`Sorry but id: ${person_id} doesnt match uuid format \n`);
-          res.statusCode = 400;
-          res.end();
+          responseBuilder({
+            res,
+            code: 400,
+            message: `Sorry but id: ${person_id} doesnt match uuid format \n`,
+          });
         } else if (!database.hasOwnProperty(person_id)) {
-          res.write(`Sorry but no user with ${person_id} exist \n`);
-          res.statusCode = 404;
-          res.end();
+          responseBuilder({
+            res,
+            code: 404,
+            message: `Sorry but no user with ${person_id} exist \n`,
+          });
         } else {
-          res.writeHead(201, { "Content-Type": "application/json" });
-          res.write(JSON.stringify(database[person_id]));
-          res.end();
+          responseBuilder({
+            res,
+            code: 200,
+            body: database[person_id],
+          });
         }
       }
       break;
 
     case "DELETE":
       if (!isUuid(person_id)) {
-        res.write(`Sorry but id: ${person_id} doesnt match uuid format \n`);
-        res.statusCode = 400;
-        res.end();
+        responseBuilder({
+          res,
+          code: 400,
+          message: `Sorry but id: ${person_id} doesnt match uuid format \n`,
+        });
       } else if (!database.hasOwnProperty(person_id)) {
-        res.write(`Sorry but no user with ${person_id} exist \n`);
-        res.statusCode = 404;
-        res.end();
+        responseBuilder({
+          res,
+          code: 404,
+          message: `Sorry but no user with ${person_id} exist \n`,
+        });
       } else {
-        const isPersonDeleted = delete database[person_id];
+        const isPersonDeleted = deletePerson(person_id);
         if (isPersonDeleted) {
-          res.writeHead(204, { "Content-Type": "application/json" });
-          res.end();
+          responseBuilder({ res, code: 204 });
         }
       }
       break;
@@ -72,18 +81,20 @@ const server = http.createServer(async (req, res) => {
     case "PUT":
       await bodyParser(req);
       if (!isUuid(person_id)) {
-        res.write(`Sorry but id: ${person_id} doesnt match uuid format \n`);
-        res.statusCode = 400;
-        res.end();
+        responseBuilder({
+          res,
+          code: 400,
+          message: `Sorry but id: ${person_id} doesnt match uuid format \n`,
+        });
       } else if (!database.hasOwnProperty(person_id)) {
-        res.write(`Sorry but no user with ${person_id} exist \n`);
-        res.statusCode = 404;
-        res.end();
+        responseBuilder({
+          res,
+          code: 404,
+          message: `Sorry but no user with ${person_id} exist \n`,
+        });
       } else {
-        database[person_id] = { ...database[person_id], ...req.body };
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.write(JSON.stringify(database[person_id]));
-        res.end();
+        const updatedPerson = updatePerson({ id: person_id, body: req.body });
+        responseBuilder({ res, code: 200, body: updatedPerson });
       }
       break;
 

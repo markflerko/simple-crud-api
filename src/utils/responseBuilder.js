@@ -1,8 +1,15 @@
-const responseBuilder = ({ res, code, body = "" }) => {
-  res.writeHead(code, { "Content-Type": "application/json" });
+const responseBuilder = ({ res, code, body = "", message = "" }) => {
   if (Boolean(body)) {
+    res.writeHead(code, { "Content-Type": "application/json" });
     res.write(JSON.stringify(body));
+  } else {
+    res.statusCode = code;
   }
+
+  if (Boolean(message)) {
+    res.write(message);
+  }
+
   res.end();
 };
 
