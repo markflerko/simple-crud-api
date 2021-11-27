@@ -8,6 +8,7 @@ const responseBuilder = require("./src/utils/responseBuilder");
 const { database } = require("./src/repository/database");
 const deletePerson = require("./src/services/deletePerson");
 const updatePerson = require("./src/services/updatePerson");
+const readPerson = require("./src/services/readPerson");
 
 const PORT = process.env.PORT || 5000;
 
@@ -48,10 +49,12 @@ const server = http.createServer(async (req, res) => {
             message: `Sorry but no user with ${person_id} exist \n`,
           });
         } else {
+          const person = readPerson(person_id);
+
           responseBuilder({
             res,
             code: 200,
-            body: database[person_id],
+            body: person,
           });
         }
       }
