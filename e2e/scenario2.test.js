@@ -5,7 +5,6 @@ let id;
 let updatedEntity = {};
 
 describe("2. Create few entities, update last and see it in all entities", () => {
-  //Create few entities
   test("Create few entities", async () => {
     let requests = [];
     for (let i = 0; i < 5; i++) {
@@ -55,7 +54,7 @@ describe("2. Create few entities, update last and see it in all entities", () =>
     });
   });
 
-  test("GET-request receive all entities (empty object expected)", async () => {
+  test("GET-request receive all entities (it should contain updated entity)", async () => {
     const response = await request(server).get("/person");
 
     expect(response.status).toBe(200);
