@@ -1,13 +1,8 @@
-const { createServer } = require("http");
+const server = require("../index");
 const request = require("supertest");
 
-const server = createServer((_, response) => {
-  response.end("yolo");
-});
-
 test("yolo", async () => {
-  const response = await request(server).get("/");
+  const response = await request(server).get("/person");
 
   expect(response.status).toBe(200);
-  expect(response.text).toBe("yolo");
 });
