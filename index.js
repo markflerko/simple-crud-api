@@ -16,29 +16,31 @@ const server = http.createServer(async (req, res) => {
 
     if (path !== "person" || path_full.length >= 3) {
       console.log(`received ${method}-request on ${url}`);
-      res.statusCode = 404;
-      res.write("Sorry but no other routes than person exist\n");
-      res.end();
+      responseBuilder({
+        res,
+        code: 404,
+        message: "Sorry but no other routes than person exist\n",
+      });
     } else {
       switch (method) {
         case "POST":
-          postPerson(req, res);
+          await postPerson(req, res);
           break;
 
         case "GET":
           if (!person_id) {
-            getPersons(res);
+            await getPersons(res);
           } else {
-            getPerson({ res, id: person_id });
+            await getPerson({ res, id: person_id });
           }
           break;
 
         case "DELETE":
-          delPerson({ res, id: person_id });
+          await delPerson({ res, id: person_id });
           break;
 
         case "PUT":
-          putPerson({ res, req, id: person_id });
+          await putPerson({ res, req, id: person_id });
           break;
 
         default:

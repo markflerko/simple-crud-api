@@ -1,7 +1,11 @@
 const { database } = require("../repository/database");
 
 const readPersons = () => {
-  return database;
+  try {
+    return database;
+  } catch (error) {
+    throw error;
+  }
 };
 
 module.exports = readPersons;
