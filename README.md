@@ -23,5 +23,5 @@ npm run start:prod
 
 Run tests
 ```bash
-`npm run test`
+npm run test
 ```
