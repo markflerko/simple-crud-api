@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "NODE_PATH=./ nodemon --ignore sessions -r dotenv/config --exec node -- index.js",
-    "start:prod": "webpack && nodemon ./dist/main.js"
+    "start:prod": "webpack --mode=production && NODE_PATH=./ nodemon --ignore sessions -r dotenv/config --exec node -- ./dist/main.js"
   },
   "repository": {
     "type": "git",
