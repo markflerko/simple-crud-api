@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_PATH=./ nodemon --ignore sessions -r dotenv/config --exec node -- index.js"
+    "start:dev": "NODE_PATH=./ nodemon --ignore sessions -r dotenv/config --exec node -- index.js"
   },
   "repository": {
     "type": "git",

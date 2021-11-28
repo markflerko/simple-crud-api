@@ -1,49 +1,57 @@
 const http = require("http");
-const bodyParser = require("./src/utils/bodyParser");
-const isUuid = require("./src/utils/isUuid");
 const postPerson = require("./src/controllers/postPerson");
 const getPersons = require("./src/controllers/getPersons");
 const getPerson = require("./src/controllers/getPerson");
-const responseBuilder = require("./src/utils/responseBuilder");
-const { database } = require("./src/repository/database");
 const delPerson = require("./src/controllers/delPerson");
 const putPerson = require("./src/controllers/putPerson");
+const responseBuilder = require("./src/utils/responseBuilder");
 
 const PORT = process.env.PORT || 5000;
 
 const server = http.createServer(async (req, res) => {
-  const { method, url } = req;
-  const [path, person_id] = url.split("/").slice(1);
+  try {
+    const { method, url } = req;
+    const path_full = url.split("/").slice(1);
+    const [path, person_id] = path_full;
 
-  if (path !== "person") {
-    console.log(`received ${method}-request on ${url}`);
-    res.write("Sorry but we dont have other routes than person \n");
-    res.end();
-  }
+    if (path !== "person" || path_full.length >= 3) {
+      console.log(`received ${method}-request on ${url}`);
+      res.statusCode = 404;
+      res.write("Sorry but no other routes than person exist\n");
+      res.end();
+    } else {
+      switch (method) {
+        case "POST":
+          postPerson(req, res);
+          break;
 
-  switch (method) {
-    case "POST":
-      postPerson(req, res);
-      break;
+        case "GET":
+          if (!person_id) {
+            getPersons(res);
+          } else {
+            getPerson({ res, id: person_id });
+          }
+          break;
 
-    case "GET":
-      if (!person_id) {
-        getPersons(res);
-      } else {
-        getPerson({ res, id: person_id });
+        case "DELETE":
+          delPerson({ res, id: person_id });
+          break;
+
+        case "PUT":
+          putPerson({ res, req, id: person_id });
+          break;
+
+        default:
+          break;
       }
-      break;
-
-    case "DELETE":
-      delPerson({ res, id: person_id });
-      break;
-
-    case "PUT":
-      putPerson({ res, req, id: person_id });
-      break;
-
-    default:
-      break;
+    }
+  } catch (error) {
+    console.log(error);
+    responseBuilder({
+      res,
+      code: 500,
+      message: "Sorry, internal server error has occured",
+    });
   }
 });
 
