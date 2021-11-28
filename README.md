@@ -1,12 +1,25 @@
-###Running
+### Get Started
 
+1 clone repo
+
+2 git checkout Ciphering_CLI_Tool
+
+3 cd /Ciphering CLI Tool
+
+4 run in console
 `npm install`
 
 Run API in development mode with:
-`npm run start:dev`
+```bash
+npm run start:dev
+```
 
 Run API in production mode with:
-`npm run start:prod`
+```bash
+npm run start:prod
+```
 
 Run tests
+```bash
 `npm run test`
+```
