@@ -1,13 +1,15 @@
 ### Get Started
 
-1 clone repo
+1.clone repo
 
-2 git checkout Ciphering_CLI_Tool
+2.git checkout Ciphering_CLI_Tool
 
-3 cd /Ciphering CLI Tool
+3.cd /Ciphering CLI Tool
 
-4 run in console
-`npm install`
+4.run in console
+```bash
+npm install
+```
 
 Run API in development mode with:
 ```bash
