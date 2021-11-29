@@ -2,11 +2,9 @@
 
 1.clone repo
 
-2.git checkout Ciphering_CLI_Tool
+2.git checkout develop
 
-3.cd /Ciphering CLI Tool
-
-4.run in console
+3.run in console
 ```bash
 npm install
 ```
