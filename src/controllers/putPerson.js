@@ -3,9 +3,12 @@ const { database } = require("../repository/database");
 const isUuid = require("../utils/isUuid");
 const responseBuilder = require("../utils/responseBuilder");
 const bodyParser = require("../utils/bodyParser");
+const getIdFromReq = require("../utils/getPathFromReq");
 
-const putPerson = async ({ res, req, id }) => {
+const putPerson = async (req, res) => {
   try {
+    const id = getIdFromReq(req);
+
     await bodyParser(req);
     if (!isUuid(id)) {
       responseBuilder({

@@ -1,9 +1,6 @@
-const postPerson = require("./controllers/postPerson");
-const getPersons = require("./controllers/getPersons");
-const getPerson = require("./controllers/getPerson");
-const delPerson = require("./controllers/delPerson");
-const putPerson = require("./controllers/putPerson");
 const responseBuilder = require("./utils/responseBuilder");
+const emitter = require("./utils/eventEmitter");
+const router = require("./routes/Router/index");
 
 module.exports = async (req, res) => {
   try {
@@ -11,37 +8,21 @@ module.exports = async (req, res) => {
     const path_full = url.split("/").slice(1);
     const [path, person_id] = path_full;
 
-    if (path !== "person" || path_full.length >= 3) {
-      console.log(`received ${method}-request on ${url}`);
+    if (path_full.length >= 3) {
       responseBuilder({
         res,
         code: 404,
-        message: "Sorry but no other routes than person exist\n",
+        message: "Sorry we have only one layer nest\n",
       });
     } else {
-      switch (method) {
-        case "POST":
-          await postPerson(req, res);
-          break;
-
-        case "GET":
-          if (!person_id) {
-            await getPersons(res);
-          } else {
-            await getPerson({ res, id: person_id });
-          }
-          break;
-
-        case "DELETE":
-          await delPerson({ res, id: person_id });
-          break;
-
-        case "PUT":
-          await putPerson({ res, req, id: person_id });
-          break;
-
-        default:
-          break;
+      const emitted = emitter.emit(`[${path}]:[${method}]`, req, res);
+      console.log(`[${path}]:[${method}]`);
+      if (!emitted) {
+        responseBuilder({
+          res,
+          code: 404,
+          message: "no such endpoint\n",
+        });
       }
     }
   } catch (error) {

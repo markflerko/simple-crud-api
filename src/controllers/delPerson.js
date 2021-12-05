@@ -2,9 +2,11 @@ const deletePerson = require("../services/deletePerson");
 const { database } = require("../repository/database");
 const isUuid = require("../utils/isUuid");
 const responseBuilder = require("../utils/responseBuilder");
+const getIdFromReq = require("../utils/getPathFromReq");
 
-const delPerson = async ({ res, id }) => {
+const delPerson = async (req, res) => {
   try {
+    const id = getIdFromReq(req);
     if (!isUuid(id)) {
       responseBuilder({
         res,
